@@ -208,16 +208,16 @@ User → API GW → Portfolio Service ─→ Trade DB        : what the user own
 
 ### 8. Data stores at a glance
 
-| Store | Tech | Holds | Why |
-|---|---|---|---|
-| UserDB | Postgres | Profile, KYC flag | Relational, low write rate |
-| Payment DB | Postgres | Deposits/withdrawals, balance | ACID; money must be correct |
-| Order DB | Postgres | Every order and its status | Strong consistency |
-| Trade DB | Postgres | Only executed trades | Reconciliation and P&L source |
-| Watchlist DB | Postgres | user → watchlist → stocks | Simple relational data |
-| InfluxDB | Time-series | Per-second price history | Fast time-range queries, downsampling |
-| Redis | Pub/Sub + cache | Latest price per stock | Sub-ms fan-out for < 50ms latency |
-| Kafka | Stream | `stock_price`, `order_status`, `raw_orders`, `verified_orders`, `rejected_orders` | Decoupling, buffering, replay |
+| Store        | Tech            | Holds                                                                             | Why                                   |
+| ------------ | --------------- | --------------------------------------------------------------------------------- | ------------------------------------- |
+| UserDB       | Postgres        | Profile, KYC flag                                                                 | Relational, low write rate            |
+| Payment DB   | Postgres        | Deposits/withdrawals, balance                                                     | ACID; money must be correct           |
+| Order DB     | Postgres        | Every order and its status                                                        | Strong consistency                    |
+| Trade DB     | Postgres        | Only executed trades                                                              | Reconciliation and P&L source         |
+| Watchlist DB | Postgres        | user → watchlist → stocks                                                         | Simple relational data                |
+| InfluxDB     | Time-series     | Per-second price history                                                          | Fast time-range queries, downsampling |
+| Redis        | Pub/Sub + cache | Latest price per stock                                                            | Sub-ms fan-out for < 50ms latency     |
+| Kafka        | Stream          | `stock_price`, `order_status`, `raw_orders`, `verified_orders`, `rejected_orders` | Decoupling, buffering, replay         |
 
 ---
 
@@ -238,3 +238,7 @@ User → API GW → Portfolio Service ─→ Trade DB        : what the user own
 - **"What if the Exchange Gateway crashes after placing an order but before the status is written?"** `order_status` comes from the exchange. On restart, query the exchange for open orders, and EOD reconciliation against Trade DB catches anything missed.
 - **"Why is the Exchange Gateway a separate service?"** The exchange limits connections (~400–500 symbols per WS). A dedicated gateway owns those few connections, the protocol translation and the rate limits.
 - **"How are price-history charts fast over years of data?"** InfluxDB retention and downsampling keep raw 1s data for recent days and 1m/1h/1d candles for older ranges.
+
+## Exaclidraw link
+
+https://excalidraw.com/#json=Q_74JG9Lyxlp8D5o3MPq3,OUczIzWjWi4TFFg_KYrjlw
